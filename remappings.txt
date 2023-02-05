@@ -1,1 +1,2 @@
 zora-drops-contracts/=lib/zora-drops-contracts/src/
+openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/

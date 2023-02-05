@@ -5,10 +5,13 @@ import "forge-std/Test.sol";
 import "../src/ZeckMetadataRenderer.sol";
 
 contract CounterTest is Test {
-    Counter public counter;
+    IMetadataRenderer public renderer;
 
     function setUp() public {
-        counter = new Counter();
+        renderer = new ZeckMetadataRenderer();
     }
 
+    function test_tokenURI() public {
+        assertEq(renderer.tokenURI(0), "TEST");
+    }
 }
