@@ -3,19 +3,18 @@ pragma solidity ^0.8.10;
 
 import {ColorLib} from "zorb/ColorLib.sol";
 import {Base64} from "base64/base64.sol";
-import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 import {Strings} from "openzeppelin-contracts/utils/Strings.sol";
 import {IMetadataRenderer} from "zora-drops-contracts/interfaces/IMetadataRenderer.sol";
 import {ERC721Drop} from "zora-drops-contracts/ERC721Drop.sol";
 
-contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
+contract NotableZorbsMetadataRenderer is IMetadataRenderer {
     string public name;
     string public description;
     string public contractImage;
     string public sellerFeeBasisPoints;
     string public sellerFeeRecipient;
     string public externalLink;
-    address payable public notableZorbAddress;
+    ERC721Drop tokenContract;
 
     constructor(
         string memory _name,
@@ -24,17 +23,15 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
         string memory _sellerFeeBasisPoints,
         string memory _sellerFeeRecipient,
         string memory _externalLink,
-        address payable _notableZorbAddress,
-        address _ownerAddress
+        address payable _notableZorbAddress
     ) {
-        notableZorbAddress = _notableZorbAddress;
+        tokenContract = ERC721Drop(_notableZorbAddress);
         name = _name;
         description = _description;
         contractImage = _contractImage;
         sellerFeeBasisPoints = _sellerFeeBasisPoints;
         sellerFeeRecipient = _sellerFeeRecipient;
         externalLink = _externalLink;
-        transferOwnership(_ownerAddress);
     }
 
     function gradientForAddress(
@@ -71,13 +68,17 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
     function getZorbRenderAddress(
         uint256 tokenId
     ) public view returns (address) {
-        address ownerOf = ERC721Drop(notableZorbAddress).ownerOf(tokenId);
+        address ownerOf = tokenContract.ownerOf(tokenId);
         return ownerOf;
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
-        string memory json;
+        require(
+            tokenContract.totalSupply() >= tokenId,
+            "Token does not exist."
+        );
 
+        string memory json;
         string memory idString = Strings.toString(tokenId);
         address ownerOfZorb = getZorbRenderAddress(tokenId);
 
@@ -135,7 +136,7 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
             );
     }
 
-    function initializeWithData(bytes memory initData) external {
+    function initializeWithData(bytes memory initData) external pure {
         require(initData.length == 0, "not zero");
     }
 }
