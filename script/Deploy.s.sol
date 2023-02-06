@@ -27,7 +27,7 @@ contract Deploy is Script {
         NotableZorbsMetadataRenderer renderer = new NotableZorbsMetadataRenderer(
                 "Notable Zorb",
                 "This zorb may or may not be notable.",
-                "ipfs:///bafkreif36vetz6ayldjo252lzfpustwpu7myzhfe3x3ptepmxa6mfga6pe",
+                "ipfs:///bafybeibvflhws7clzdeqlpoie65dfgx62thoatry6oayv56loqheb3xqka",
                 Strings.toString(250),
                 string(abi.encodePacked(msg.sender)),
                 "https://notablezorbs.xyz",
