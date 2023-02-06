@@ -1,0 +1,15 @@
+{
+  "name": "notable-zorbs",
+  "version": "1.0.0",
+  "description": "this zorb may or may not be notable",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.8.3",
+    "prettier-plugin-solidity": "^1.1.1",
+    "husky": "^8.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "prettier --write ./{src,test}/**/*.sol"
+  }
+}

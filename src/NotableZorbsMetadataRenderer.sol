@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.10;
 
-import {ColorLib} from 'zorb/ColorLib.sol';
-import {Base64} from 'base64/base64.sol';
+import {ColorLib} from "zorb/ColorLib.sol";
+import {Base64} from "base64/base64.sol";
 import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 import {Strings} from "openzeppelin-contracts/utils/Strings.sol";
 import {IMetadataRenderer} from "zora-drops-contracts/interfaces/IMetadataRenderer.sol";
 import {ERC721Drop} from "zora-drops-contracts/ERC721Drop.sol";
 
 contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
-
     string public name;
     string public description;
     string public contractImage;
     string public sellerFeeBasisPoints;
     string public sellerFeeRecipient;
     string public externalLink;
-    address public notableZorbAddress;
+    address payable public notableZorbAddress;
 
     constructor(
         string memory _name,
@@ -25,7 +24,7 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
         string memory _sellerFeeBasisPoints,
         string memory _sellerFeeRecipient,
         string memory _externalLink,
-        address _notableZorbAddress,
+        address payable _notableZorbAddress,
         address _ownerAddress
     ) {
         notableZorbAddress = _notableZorbAddress;
@@ -38,12 +37,13 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
         transferOwnership(_ownerAddress);
     }
 
-
-    function gradientForAddress(address user) public pure returns (bytes[5] memory) {
+    function gradientForAddress(
+        address user
+    ) public pure returns (bytes[5] memory) {
         return ColorLib.gradientForAddress(user);
     }
 
-    function zorbForAddress(address user) public view returns (string memory) {
+    function zorbForAddress(address user) public pure returns (string memory) {
         bytes[5] memory colors = gradientForAddress(user);
         string memory encoded = Base64.encode(
             abi.encodePacked(
@@ -68,11 +68,14 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
         return string(abi.encodePacked("data:image/svg+xml;base64,", encoded));
     }
 
-    function getZorbRenderAddress(uint256 tokenId) public view returns (address){
-        return ERC721Drop(notableZorbAddress).ownerOf(tokenId);
+    function getZorbRenderAddress(
+        uint256 tokenId
+    ) public view returns (address) {
+        address ownerOf = ERC721Drop(notableZorbAddress).ownerOf(tokenId);
+        return ownerOf;
     }
 
-    function tokenURI(uint256 tokenId) external view returns (string memory){
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
         string memory json;
 
         string memory idString = Strings.toString(tokenId);
@@ -84,11 +87,11 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
                     abi.encodePacked(
                         '{"name": "',
                         name,
-                        's #',
+                        " #",
                         idString,
                         '", "title": "',
                         name,
-                        's #',
+                        " #",
                         idString,
                         '", "description": "',
                         description,
@@ -103,35 +106,36 @@ contract NotableZorbsMetadataRenderer is IMetadataRenderer, Ownable {
     }
 
     function contractURI() public view returns (string memory) {
-        return string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(
-                    bytes(
-                        string(
-                            abi.encodePacked(
-                                '{"name": "',
-                                name,
-                                '", "description": "',
-                                description,
-                                '", "image": "',
-                                contractImage,
-                                '", "seller_fee_basis_points": "',
-                                sellerFeeBasisPoints,
-                                '", "seller_fee_recipient": "',
-                                sellerFeeRecipient,
-                                '", "external_link": "',
-                                externalLink,
-                                '"}'
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            string(
+                                abi.encodePacked(
+                                    '{"name": "',
+                                    name,
+                                    's", "description": "',
+                                    description,
+                                    '", "image": "',
+                                    contractImage,
+                                    '", "seller_fee_basis_points": "',
+                                    sellerFeeBasisPoints,
+                                    '", "seller_fee_recipient": "',
+                                    sellerFeeRecipient,
+                                    '", "external_link": "',
+                                    externalLink,
+                                    '"}'
+                                )
                             )
                         )
                     )
                 )
-            )
-        );
+            );
     }
 
     function initializeWithData(bytes memory initData) external {
-        // do nothing
+        require(initData.length == 0, "not zero");
     }
 }
