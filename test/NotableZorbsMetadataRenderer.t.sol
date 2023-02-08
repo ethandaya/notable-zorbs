@@ -86,7 +86,7 @@ contract NotableZorbsTest is Test {
             "This Zorb may or may not be notable. Each NFT imbues the properties of its wallet holder, and when sent to someone else, will transform.",
             "image://",
             Strings.toString(ROYALTY_BPS),
-            string(abi.encodePacked(OWNER_ADDRESS)),
+            "",
             "notablezorbs.xyz",
             payable(deployedDrop)
         );

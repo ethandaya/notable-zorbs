@@ -11,10 +11,6 @@ contract Deploy is Script {
     function run() public {
         console.log("Starting ---");
 
-        ZoraNFTCreatorV1 creator = ZoraNFTCreatorV1(
-            payable(address(vm.envAddress("ZORA_NFT_CREATOR_ADDRESS")))
-        );
-
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
@@ -27,9 +23,9 @@ contract Deploy is Script {
         NotableZorbsMetadataRenderer renderer = new NotableZorbsMetadataRenderer(
                 "Notable Zorb",
                 "This zorb may or may not be notable.",
-                "ipfs:///bafybeibvflhws7clzdeqlpoie65dfgx62thoatry6oayv56loqheb3xqka",
-                Strings.toString(250),
-                string(abi.encodePacked(msg.sender)),
+                "ipfs://bafybeibvflhws7clzdeqlpoie65dfgx62thoatry6oayv56loqheb3xqka",
+                Strings.toString(ROYALTY_BPS),
+                "",
                 "https://notablezorbs.xyz",
                 payable(address(vm.envAddress("EDITION_ADDRESS")))
             );
